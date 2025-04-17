@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
-export function LoginForm() {
+export const LoginForm = () => {
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [showPassword, setShowPassword] = useState(false);
@@ -32,7 +32,9 @@ export function LoginForm() {
 
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
+  type LoginFormValues = z.infer<typeof LoginSchema>;
+
+  const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
@@ -41,34 +43,27 @@ export function LoginForm() {
   });
 
   //   const handleLogin = async (e?: React.FormEvent) => {
-  const handleLogin = async (value: z.infer<typeof LoginSchema>) => {
+  const handleLogin = async (value: LoginFormValues) => {
     // e?.preventDefault(); // untuk mencegah reload form
     // startTransition(() => {
     //   setEmail(value.email);
     //   setPassword(value.password);
     // });
     try {
-      await axios
-        .post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-          {
-            email: value.email,
-            password: value.password,
-            // email,
-            // password,
-          },
-          { withCredentials: true }
-        )
-        .then((res) => {
-          console.log({ res });
-        })
-        .catch((err) => {
-          console.log({ err });
-        }); // penting untuk cookie auth
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          email: value.email,
+          password: value.password,
+          // email,
+          // password,
+        },
+        { withCredentials: true }
+      ); // penting untuk cookie auth
 
       toast({
         title: "Login successful",
-        description: "You will be redirected to dashboard.",
+        description: "You will be redirected to dashboard page.",
       });
 
       router.push("/dashboard");
@@ -92,19 +87,9 @@ export function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleLogin)}
-          className="w-full max-w-sm space-y-6"
+          className="w-full max-w-md px-6 py-4 shadow-md rounded-xl space-y-6"
         >
           <div className="space-y-4 mb-4">
-            {/* <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                type="email"
-              />
-            </div> */}
             <FormField
               control={form.control}
               name="email"
@@ -123,27 +108,6 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            {/* <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  type={showPassword ? "text" : "password"}
-                  className="pr-10"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute  top-1/2 right-2 -translate-y-1/2 text-gray-500 hover:text-black"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div> */}
             <FormField
               control={form.control}
               name="password"
@@ -186,4 +150,4 @@ export function LoginForm() {
       </Form>
     </CardWrapper>
   );
-}
+};

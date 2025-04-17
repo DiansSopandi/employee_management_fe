@@ -39,7 +39,7 @@ export const CardWrapper = ({
           )}
         </CardHeader>
         <CardContent className="mb-4">{children}</CardContent>
-        <CardFooter>
+        <CardFooter className="flex justify-between items-center">
           <BackButton href={backButtonHref} label={backButtonLabel} />
         </CardFooter>
       </Card>

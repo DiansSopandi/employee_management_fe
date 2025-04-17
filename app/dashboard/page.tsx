@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { logout } from "@/lib/logout";
 import { AddUserModal } from "@/components/add-user-modal";
 
 type User = {

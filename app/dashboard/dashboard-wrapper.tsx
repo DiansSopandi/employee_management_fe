@@ -1,12 +1,25 @@
-import DashboardHeader from "@/components/form/dashboard/header";
 import DashboardNavbar from "@/components/form/dashboard/navbar";
 import Sidebar from "@/components/form/dashboard/sidebar";
-import DashboardSidebar from "@/components/form/dashboard/sidebar_";
-import React from "react";
+import React, { useEffect } from "react";
+import { useAppSelector } from "../redux";
 
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  });
+
   return (
-    <div className=" flex bg-gray-50 text-white w-full min-h-screen">
+    <div
+      className={`${
+        isDarkMode ? "dark" : "light"
+      } flex bg-gray-50 w-full min-h-screen`}
+    >
       {/* <DashboardSidebar /> */}
       <Sidebar />
       <main className=" flex flex-col bg-gray-50 w-full h-full text-black py-7 px-10 md:pl-24 ml-52">

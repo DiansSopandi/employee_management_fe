@@ -1,10 +1,15 @@
+"use client";
+
 import React from "react";
 import DashboardWrapper from "./dashboard-wrapper";
+import StoreProvider from "../redux";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <DashboardWrapper> {children} </DashboardWrapper>
+      <StoreProvider>
+        <DashboardWrapper> {children} </DashboardWrapper>
+      </StoreProvider>
     </div>
   );
 };

@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-export function AddUserModal({ onUserAdded }: { onUserAdded: () => void }) {
+export function AddUserModal({
+  onUserAdded,
+}: Readonly<{ onUserAdded: () => void }>) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     username: "",
