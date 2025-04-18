@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/landing/hero-section";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
+import { FeatureSection } from "@/components/landing/feature-section";
 
 export default function LandingPage() {
   return (
@@ -9,6 +10,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <HeroSection />
         {/* Section lain nanti bisa kamu tambah */}
+        <FeatureSection />
       </main>
       <Footer />
     </div>
