@@ -35,16 +35,19 @@ export function CustomButton({
   //     md: "px-4 py-2 text-sm",
   //     lg: "px-6 py-3 text-base",
   //   };
-  // const baseStyle = "bg-black text-white rounded-md";
-  const widthClass =
-    width === "full" ? "w-full" : width === "auto" ? "w-auto" : width;
+  const baseStyle = "bg-black text-white rounded-md";
+  const widthAuto = width === "auto" ? "w-auto" : width;
+  const widthClass = width === "full" ? "w-full" : widthAuto;
+  const buttonClass = cn(sizeMap[size], widthClass, className);
+
   return (
     <Button
       type={type}
       variant={variant}
       onClick={onClick}
       disabled={disabled}
-      className={cn(sizeMap[size], widthClass, className)}
+      // className={cn(sizeMap[size], widthClass, className)}
+      className={buttonClass}
     >
       {children}
     </Button>
