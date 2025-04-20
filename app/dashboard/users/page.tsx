@@ -79,7 +79,9 @@ export default function Users() {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users?page=${
           currentPage - 1
-        }&pageSize=${currentPageSize}&fullSearch=${fullSearch}`,
+        }&pageSize=${currentPageSize}&fullSearch=${encodeURIComponent(
+          fullSearch
+        )}`,
         {
           credentials: "include",
         }
@@ -161,8 +163,9 @@ export default function Users() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-md font-semibold mb-4">Users Management</h1>
         <div className="flex items-center space-x-2">
-          {/* <AddUserModal onUserAdded={() => fetchUsers(page)} /> */}
-          <AddUserModal onUserAdded={() => fetchUsers(page, pageSize)} />
+          <AddUserModal
+            onUserAdded={() => fetchUsers(page, pageSize, searchTerm)}
+          />
         </div>
       </div>
 
@@ -197,42 +200,6 @@ export default function Users() {
         </div>
       </div>
 
-      {/* <table className="w-full border text-sm">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="p-2">Name</th>
-            <th className="p-2">Email</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users?.length &&
-            users?.map((u) => (
-              <tr key={u.id}>
-                <td className="p-2">{u.username}</td>
-                <td className="p-2">{u.email}</td>
-                <td className="p-2">
-                  <CustomButton
-                    variant="default"
-                    size="sm"
-                    className="text-xs mx-2"
-                    width="w-28"
-                  >
-                    Edit
-                  </CustomButton>
-                  <CustomButton
-                    variant="destructive"
-                    size="sm"
-                    className="text-xs mx-2"
-                    width="w-28"
-                  >
-                    Delete
-                  </CustomButton>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -243,42 +210,6 @@ export default function Users() {
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
-          {/* <TableBody>
-            {users?.length ? (
-              users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <CustomButton
-                        variant="default"
-                        size="sm"
-                        className="text-xs"
-                        width="w-28"
-                      >
-                        Edit
-                      </CustomButton>
-                      <CustomButton
-                        variant="destructive"
-                        size="sm"
-                        className="text-xs"
-                        width="w-28"
-                      >
-                        Delete
-                      </CustomButton>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center">
-                  No users found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody> */}
           <TableBody>
             {isLoading ? (
               <TableRow>
@@ -294,36 +225,6 @@ export default function Users() {
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination Controls */}
-      {/* <div className="flex justify-between mt-4">
-        <CustomButton
-          variant="default"
-          size="sm"
-          disabled={page === 1}
-          onClick={() => setPage((prev) => prev - 1)}
-          className="flex items-center gap-1"
-          width="w-40"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Previous
-        </CustomButton>
-
-        <span className="text-sm text-gray-600">
-          Page {page} of {lastPage}
-        </span>
-        <CustomButton
-          variant="default"
-          size="sm"
-          disabled={page === lastPage}
-          onClick={() => setPage((prev) => prev + 1)}
-          className="flex items-center gap-1"
-          width="w-40"
-        >
-          Next
-          <ChevronRight className="w-4 h-4" />
-        </CustomButton>
-      </div> */}
 
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
