@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { toast } from "sonner";
+import { CustomButton } from "./ui/custom-button";
 
 export function AddUserModal({
   onUserAdded,
@@ -42,9 +44,23 @@ export function AddUserModal({
         }
       );
 
-      if (!res.ok) throw new Error("Failed to add user");
+      const result = await res.json();
 
       setOpen(false);
+
+      if (!res.ok) {
+        toast("Add User failed", {
+          description: `${result.message}`,
+          duration: 3000,
+        });
+        return;
+      }
+
+      toast("Add User success", {
+        description: `${result.message}`,
+        duration: 3000,
+      });
+
       onUserAdded();
     } catch (err) {
       console.error("Add user error:", err);
@@ -54,15 +70,15 @@ export function AddUserModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="text-xs">
+        <CustomButton size="sm" className="text-xs" width="w-40">
           Add User
-        </Button>
+        </CustomButton>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3">
+        <div className="space-y-3 ">
           <Input
             placeholder="Username"
             name="username"

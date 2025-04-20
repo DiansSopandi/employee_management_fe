@@ -32,6 +32,7 @@ const DashboardNavbar = () => {
         <div className="">
           <ThemeToggle />
         </div>
+        <Bell className="text-zinc-500 dark:text-zinc-400 cursor-pointer" />
 
         <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
 

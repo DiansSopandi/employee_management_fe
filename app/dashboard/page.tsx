@@ -1,71 +1,47 @@
+// app/dashboard/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { AddUserModal } from "@/components/add-user-modal";
+import { StatCard } from "@/components/form/dashboard/stat-card";
+import { Users, CheckCircle, Clock, Building2 } from "lucide-react";
+import dynamic from "next/dynamic";
 
-type User = {
-  status: boolean;
-  message: string;
-  data: [
-    {
-      id: number;
-      username: string;
-      email: string;
-    }
-  ];
-};
+// Dynamic import chart (client-side only)
+const EmployeePieChart = dynamic(
+  () => import("@/components/form/dashboard/employee-pie-chart"),
+  { ssr: false }
+);
 
 export default function Dashboard() {
-  const router = useRouter();
-  const [users, setUsers] = useState<User | undefined>();
-  // const [users, setUsers] = useState<User[]>([]);
-
-  const fetchUsers = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-      credentials: "include",
-    });
-    const data = await res.json();
-    setUsers(data);
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-md font-semibold mb-4">Users Management</h1>
-        <div className="flex items-center space-x-2">
-          <AddUserModal onUserAdded={fetchUsers} />
-        </div>
+    <main className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Employees" value={128} icon={Users} />
+        <StatCard
+          title="Active Employees"
+          value={115}
+          icon={CheckCircle}
+          color="text-green-600"
+        />
+        <StatCard
+          title="Pending Leaves"
+          value={7}
+          icon={Clock}
+          color="text-yellow-600"
+        />
+        <StatCard
+          title="Departments"
+          value={6}
+          icon={Building2}
+          color="text-purple-600"
+        />
       </div>
-      <table className="w-full border text-sm">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="p-2">Name</th>
-            <th className="p-2">Email</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users?.data.length &&
-            users?.data.map((u) => (
-              <tr key={u.id}>
-                <td className="p-2">{u.username}</td>
-                <td className="p-2">{u.email}</td>
-                <td className="p-2">
-                  <Button className="text-xs">Edit</Button>
-                  <Button variant="destructive" className="ml-2 text-xs">
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border shadow-sm p-6">
+        <h2 className="text-lg font-semibold mb-4">Employee Distribution</h2>
+        <EmployeePieChart />
+      </div>
+    </main>
   );
 }
