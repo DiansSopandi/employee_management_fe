@@ -45,7 +45,9 @@ export const RegisterForm = () => {
           ...value,
           roles: ["USER"],
         })
+        .then((res) => res.data)
         .catch((error) => error.response.data);
+      console.log("res", res);
 
       if (!res.success) {
         setError(res.message);

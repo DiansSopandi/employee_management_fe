@@ -3,7 +3,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { CustomButton } from "@/components/ui/custom-button";
 import {
   Table,
@@ -57,6 +56,8 @@ export type DataTableProps<T extends { id: number | string }> = Readonly<{
   rowActions?: (item: T) => React.ReactNode;
   pageSize?: number;
   defaultSearchTerm?: string;
+  // refreshTrigger?: number; // New prop to trigger data refresh
+  // customEditRenderer?: (item: T) => React.ReactNode; // New prop for custom edit button rendering
 }>;
 
 export function DataTable<T extends { id: number | string }>({
@@ -70,7 +71,9 @@ export function DataTable<T extends { id: number | string }>({
   rowActions,
   pageSize: initialPageSize = 5,
   defaultSearchTerm = "",
-}: DataTableProps<T>) {
+}: // refreshTrigger = 0,
+// customEditRenderer,
+DataTableProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -102,6 +105,7 @@ export function DataTable<T extends { id: number | string }>({
 
     return () => clearTimeout(delayDebounceFn);
   }, [loadData]);
+  // }, [loadData, refreshTrigger]);
 
   // Handle perubahan pageSize
   const handlePageSizeChange = (value: string) => {

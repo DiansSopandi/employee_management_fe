@@ -1,4 +1,3 @@
-// components/users/AddUserDialog.tsx
 "use client";
 
 import {
@@ -10,16 +9,24 @@ import { CustomButton } from "@/components/ui/custom-button";
 type UserFormData = {
   username: string;
   email: string;
-  password: string;
+  password?: string;
   roles: string[];
 };
 
-type ApiResponse = { success: boolean; message: string };
+type EditUserDialogProps = {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    roles: string[];
+  };
+  onUserUpdated: () => void;
+};
 
-export function AddUserDialog({
-  onUserAdded,
-}: Readonly<{ onUserAdded: () => void }>) {
-  // Definisi fields untuk form user
+export function EditUserDialog({
+  user,
+  onUserUpdated,
+}: Readonly<EditUserDialogProps>) {
   const userFields: FormField[] = [
     {
       name: "username",
@@ -33,43 +40,39 @@ export function AddUserDialog({
       name: "email",
       label: "Email",
       type: "email",
-      placeholder: "Enter email address",
+      placeholder: "Enter email",
       required: true,
       validation: (value) =>
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-          ? "Please enter a valid email address"
+          ? "Enter a valid email"
           : null,
-      // !value.includes("@") ? "Please enter a valid email address" : null,
     },
     {
       name: "password",
       label: "Password",
       type: "password",
-      placeholder: "Enter password",
-      required: true,
-      validation: (value) =>
-        value.length < 6 ? "Password must be at least 6 characters" : null,
+      placeholder: "Leave blank to keep current password",
+      required: false,
     },
     {
       name: "roles",
-      label: "Role",
+      label: "Roles",
       type: "select",
-      defaultValue: "USER",
       options: [
         { value: "USER", label: "User" },
         { value: "ADMIN", label: "Admin" },
         { value: "MANAGER", label: "Manager" },
       ],
+      defaultValue: user.roles[0], // Atau support multi jika kamu mau
     },
   ];
 
-  // Handle submit form
-  const handleSubmit = async (data: UserFormData): Promise<ApiResponse> => {
+  const handleSubmit = async (data: UserFormData) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`,
         {
-          method: "POST",
+          method: "PATCH", // atau PUT sesuai backend kamu
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
@@ -85,10 +88,10 @@ export function AddUserDialog({
         success: res.ok,
         message:
           result.message ??
-          (res.ok ? "User added successfully" : "Failed to add user"),
+          (res.ok ? "User updated successfully" : "Failed to update user"),
       };
     } catch (err) {
-      console.error("Add user error:", err);
+      console.error("Update user error:", err);
       return {
         success: false,
         message: "An unexpected error occurred",
@@ -98,15 +101,25 @@ export function AddUserDialog({
 
   return (
     <GenericFormDialog<UserFormData>
-      title="Add New User"
+      title="Edit User"
       triggerButton={
-        <CustomButton size="sm" className="text-xs" width="w-40">
-          Add User
+        <CustomButton variant="outline" size="sm" className="text-xs">
+          Edit
         </CustomButton>
       }
-      fields={userFields}
+      fields={userFields.map((field) => ({
+        ...field,
+        defaultValue:
+          field.name === "password"
+            ? undefined
+            : (user[field.name as keyof Omit<UserFormData, "password">] as
+                | string
+                | number
+                | boolean
+                | undefined),
+      }))}
       onSubmit={handleSubmit}
-      onSuccess={onUserAdded}
+      onSuccess={onUserUpdated}
       transformSubmitData={(data) => ({
         ...data,
         roles: Array.isArray(data.roles) ? data.roles : [data.roles],

@@ -9,8 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 // Tipe data untuk field input
 export type FormField = {
@@ -39,6 +40,9 @@ export type GenericFormDialogProps<T> = {
   submitButtonText?: string;
   apiUrl?: string;
   transformSubmitData?: (data: any) => any; // Function untuk transformasi data sebelum submit
+  isOpen?: boolean; // Tambahan untuk controlled mode
+  onOpenChange?: (isOpen: boolean) => void; // Tambahan untuk controlled mode
+  initialData?: Record<string, any>; // Tambahan untuk data awal saat edit
 };
 
 export function GenericFormDialog<T>({
@@ -49,18 +53,74 @@ export function GenericFormDialog<T>({
   onSuccess,
   submitButtonText = "Submit",
   transformSubmitData,
+  isOpen, // Controlled mode
+  onOpenChange, // Controlled mode
+  initialData, // Data awal untuk edit
 }: Readonly<GenericFormDialogProps<T>>) {
-  const [open, setOpen] = useState(false);
+  // Gunakan controlled mode jika isOpen dan onOpenChange disediakan
+  const controlled = isOpen !== undefined && onOpenChange !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // const [open, setOpen] = useState(false);
+  // Open state yang digunakan bergantung pada mode
+  const open = controlled ? isOpen : internalOpen;
+  const setOpen = controlled ? onOpenChange : setInternalOpen;
+
   const [formData, setFormData] = useState<any>(() => {
-    // Inisialisasi form data dari default values
-    const initialData: any = {};
+    // Inisialisasi form data dari initialData atau default values
+    const data: any = initialData || {};
     fields.forEach((field) => {
-      initialData[field.name] = field.defaultValue ?? "";
+      if (data[field.name] === undefined) {
+        data[field.name] = field.defaultValue ?? "";
+      }
     });
-    return initialData;
+    return data;
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordVisibility, setPasswordVisibility] = useState<
+    Record<string, boolean>
+  >({});
+
+  const togglePasswordVisibility = (fieldName: string) => {
+    setPasswordVisibility((prev) => ({
+      ...prev,
+      [fieldName]: !prev[fieldName],
+    }));
+  };
+
+  // Update form data ketika initialData berubah (untuk edit)
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev: any) => {
+        const newData = { ...prev };
+
+        // Update dengan data baru
+        Object.keys(initialData).forEach((key) => {
+          newData[key] = initialData[key];
+        });
+
+        return newData;
+      });
+    }
+  }, [initialData]);
+
+  // Update form data ketika fields berubah (untuk defaultValues)
+  useEffect(() => {
+    setFormData((prev: any) => {
+      const newData = { ...prev };
+
+      fields.forEach((field) => {
+        // Jika field belum ada di formData, gunakan defaultValue
+        if (newData[field.name] === undefined) {
+          newData[field.name] = field.defaultValue ?? "";
+        }
+      });
+
+      return newData;
+    });
+  }, [fields]);
 
   // Handle perubahan nilai input
   const handleChange = (name: string, value: any) => {
@@ -87,11 +147,13 @@ export function GenericFormDialog<T>({
 
   // Reset form
   const resetForm = () => {
-    const initialData: any = {};
+    const initialFormData: any = initialData || {};
     fields.forEach((field) => {
-      initialData[field.name] = field.defaultValue ?? "";
+      if (initialFormData[field.name] === undefined) {
+        initialFormData[field.name] = field.defaultValue ?? "";
+      }
     });
-    setFormData(initialData);
+    setFormData(initialFormData);
     setErrors({});
   };
 
@@ -108,7 +170,7 @@ export function GenericFormDialog<T>({
       }
 
       // Validasi custom jika ada
-      if (field.validation && formData[field.name]) {
+      if (field.validation && formData[field.name] !== undefined) {
         const error = field.validation(formData[field.name]);
         if (error) {
           newErrors[field.name] = error;
@@ -239,14 +301,34 @@ export function GenericFormDialog<T>({
         return (
           <div key={field.name} className="space-y-1">
             <label className="text-sm font-medium">{field.label}</label>
-            <input
-              type={field.type ?? "text"}
-              name={field.name}
-              value={value}
-              placeholder={field.placeholder}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
+            <div className="relative">
+              <input
+                type={
+                  field.type === "password" && !passwordVisibility[field.name]
+                    ? "password"
+                    : "text"
+                }
+                name={field.name}
+                value={value}
+                placeholder={field.placeholder}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              {field.type === "password" && (
+                <button
+                  type="button"
+                  onClick={() => togglePasswordVisibility(field.name)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  tabIndex={-1}
+                >
+                  {passwordVisibility[field.name] ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              )}
+            </div>
             {error && <p className="text-xs text-red-500">{error}</p>}
           </div>
         );
