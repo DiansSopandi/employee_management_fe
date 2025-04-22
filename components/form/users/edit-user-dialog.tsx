@@ -1,129 +1,111 @@
+// components/users/EditUserDialog.tsx
 "use client";
 
 import {
   GenericFormDialog,
   FormField,
 } from "@/components/dialog/generic-form-dialog";
-import { CustomButton } from "@/components/ui/custom-button";
+// import { User } from "@/types/user"; // atau sesuaikan dengan struktur user-mu
+import { useMemo } from "react";
 
-type UserFormData = {
+type User = {
+  id: string;
   username: string;
   email: string;
-  password?: string;
   roles: string[];
 };
 
 type EditUserDialogProps = {
-  user: {
-    id: string;
-    username: string;
-    email: string;
-    roles: string[];
-  };
-  onUserUpdated: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  user: User | null;
+  onSuccess?: () => void;
 };
 
 export function EditUserDialog({
+  isOpen,
+  onClose,
   user,
-  onUserUpdated,
-}: Readonly<EditUserDialogProps>) {
-  const userFields: FormField[] = [
-    {
-      name: "username",
-      label: "Username",
-      placeholder: "Enter username",
-      required: true,
-      validation: (value) =>
-        value.length < 3 ? "Username must be at least 3 characters" : null,
-    },
-    {
-      name: "email",
-      label: "Email",
-      type: "email",
-      placeholder: "Enter email",
-      required: true,
-      validation: (value) =>
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-          ? "Enter a valid email"
-          : null,
-    },
-    {
-      name: "password",
-      label: "Password",
-      type: "password",
-      placeholder: "Leave blank to keep current password",
-      required: false,
-    },
-    {
-      name: "roles",
-      label: "Roles",
-      type: "select",
-      options: [
-        { value: "USER", label: "User" },
-        { value: "ADMIN", label: "Admin" },
-        { value: "MANAGER", label: "Manager" },
-      ],
-      defaultValue: user.roles[0], // Atau support multi jika kamu mau
-    },
-  ];
+  onSuccess,
+}: EditUserDialogProps) {
+  // Pastikan user tersedia sebelum menampilkan form
+  if (!user) return null;
 
-  const handleSubmit = async (data: UserFormData) => {
+  // 🧩 Definisikan field form (bisa gunakan useMemo agar tidak render ulang terus)
+  const fields: FormField[] = useMemo(
+    () => [
+      {
+        name: "username",
+        label: "Username",
+        type: "text",
+        required: true,
+        defaultValue: user.username,
+      },
+      {
+        name: "email",
+        label: "Email",
+        type: "text",
+        required: true,
+        defaultValue: user.email,
+        validation: (value) =>
+          !value.includes("@") ? "Email tidak valid" : null,
+      },
+      {
+        name: "roles",
+        label: "Roles",
+        type: "select",
+        defaultValue: user.roles,
+        options: [
+          { value: "user", label: "User" },
+          { value: "admin", label: "Admin" },
+          { value: "employee", label: "Employee" },
+        ],
+        required: true,
+      },
+      // Tambahkan field lain sesuai kebutuhan
+    ],
+    [user]
+  );
+
+  // 🛠️ Fungsi submit ke backend
+  const handleSubmit = async (data: any) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`,
-        {
-          method: "PATCH", // atau PUT sesuai backend kamu
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            ...data,
-            roles: Array.isArray(data.roles) ? data.roles : [data.roles],
-          }),
-        }
-      );
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
       const result = await res.json();
 
       return {
         success: res.ok,
         message:
-          result.message ??
-          (res.ok ? "User updated successfully" : "Failed to update user"),
+          result.message ||
+          (res.ok ? "Update user successfully" : "Update user failed"),
       };
-    } catch (err) {
-      console.error("Update user error:", err);
+    } catch (error) {
+      console.error("Edit user error:", error);
       return {
         success: false,
-        message: "An unexpected error occurred",
+        message: "Terjadi kesalahan saat mengedit user.",
       };
     }
   };
 
   return (
-    <GenericFormDialog<UserFormData>
+    <GenericFormDialog
       title="Edit User"
-      triggerButton={
-        <CustomButton variant="outline" size="sm" className="text-xs">
-          Edit
-        </CustomButton>
-      }
-      fields={userFields.map((field) => ({
-        ...field,
-        defaultValue:
-          field.name === "password"
-            ? undefined
-            : (user[field.name as keyof Omit<UserFormData, "password">] as
-                | string
-                | number
-                | boolean
-                | undefined),
-      }))}
+      triggerButton={null} // Tidak perlu tombol trigger karena dikendalikan dari luar
+      fields={fields}
       onSubmit={handleSubmit}
-      onSuccess={onUserUpdated}
-      transformSubmitData={(data) => ({
-        ...data,
-        roles: Array.isArray(data.roles) ? data.roles : [data.roles],
-      })}
+      onSuccess={onSuccess}
+      isOpen={isOpen}
+      onOpenChange={(open: boolean) => {
+        if (!open) onClose(); // Tutup jika user menutup dialog
+      }}
+      initialData={user}
+      submitButtonText="Save Changes"
     />
   );
 }

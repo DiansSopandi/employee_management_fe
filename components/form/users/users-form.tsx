@@ -11,20 +11,9 @@ import {
   FormField,
   GenericFormDialog,
 } from "@/components/dialog/generic-form-dialog";
-import { Pencil } from "lucide-react";
 import { EditUserDialog } from "./edit-user-dialog";
-import { CustomButton } from "@/components/ui/custom-button";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import AlertActionDialog from "@/components/common/alert-action-dialog";
 
 type User = {
   id: string;
@@ -352,7 +341,11 @@ export const UsersForm = () => {
       validation: (value) => {
         const password = editingUser
           ? undefined
-          : document.querySelector('input[name="password"]')?.value;
+          : (
+              document.querySelector(
+                'input[name="password"]'
+              ) as HTMLInputElement
+            )?.value;
         if (value && value !== password) {
           return "Passwords do not match";
         }
@@ -393,8 +386,7 @@ export const UsersForm = () => {
       />
 
       {/* Dialog untuk edit user */}
-      {/* Dialog untuk edit user */}
-      <GenericFormDialog
+      {/* <GenericFormDialog
         title="Edit User"
         triggerButton={<div></div>} // Dummy trigger karena kita menggunakan controlled mode
         fields={editUserFields}
@@ -408,33 +400,27 @@ export const UsersForm = () => {
         onOpenChange={setIsEditDialogOpen}
         initialData={editingUser || undefined}
         transformSubmitData={transformSubmitData}
+      /> */}
+
+      <EditUserDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingUser(null);
+        }}
+        user={editingUser}
+        onSuccess={() => refreshData()} // misal kamu mau refresh data setelah edit
       />
 
-      {/* Dialog konfirmasi delete */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete user{" "}
-              <strong>{userToDelete?.username}</strong>? This action cannot be
-              undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => userToDelete && executeDeleteUser(userToDelete)}
-              disabled={isSubmitting}
-              className="bg-red-600 text-red-400 hover:bg-red-700"
-            >
-              {isSubmitting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertActionDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={() => userToDelete && executeDeleteUser(userToDelete)}
+        title="Delete User"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </>
   );
 };
