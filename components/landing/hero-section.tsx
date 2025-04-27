@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import QrCodeDisplay from "./qr-code-display";
+import SendMessage from "./send-message";
 
 export const HeroSection = () => {
   return (
@@ -18,14 +20,22 @@ export const HeroSection = () => {
           </button>
         </Link>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center flex-1 min-w-[500px]">
         <Image
           src="/assets/images/hr-dashboard.svg"
           alt="HR dashboard"
           width={500}
           height={500}
-          className="dark:invert"
+          className="dark:invert object-contain"
         />
+      </div>
+      <div className="flex flex-col  items-start flex-1 md:max-w-xs ml-auto">
+        <div className="flex justify-center w-full mt-2">
+          <QrCodeDisplay />
+        </div>
+        <div className="mt-5 w-full max-w-[300px]">
+          <SendMessage />
+        </div>
       </div>
     </section>
   );
