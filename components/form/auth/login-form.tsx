@@ -50,7 +50,7 @@ export const LoginForm = () => {
     //   setPassword(value.password);
     // });
     try {
-      await axios.post(
+      const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
           email: value.email,
@@ -68,7 +68,7 @@ export const LoginForm = () => {
 
       router.push("/dashboard");
     } catch (err: any) {
-      // setError("Invalid credentials");
+      console.error("Login error:", err);
       toast({
         variant: "destructive",
         title: "Login failed",

@@ -20,7 +20,7 @@ export const HeroSection = () => {
           </button>
         </Link>
       </div>
-      <div className="flex justify-center flex-1 min-w-[500px]">
+      <div className="flex justify-center flex-1 min-w-[500px] mt-2">
         <Image
           src="/assets/images/hr-dashboard.svg"
           alt="HR dashboard"
@@ -33,9 +33,9 @@ export const HeroSection = () => {
         <div className="flex justify-center w-full mt-2">
           <QrCodeDisplay />
         </div>
-        <div className="mt-5 w-full max-w-[300px]">
+        {/* <div className="mt-5 w-full max-w-[300px]">
           <SendMessage />
-        </div>
+        </div> */}
       </div>
     </section>
   );
