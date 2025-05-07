@@ -59,6 +59,10 @@ export const RegisterForm = () => {
         toast("Register successfull", {
           description: "You will be redirected to login page.",
           duration: 3000,
+          style: {
+            backgroundColor: "#22c55e", // Tailwind green-500
+            color: "white",
+          },
         });
 
         setTimeout(() => {
@@ -69,6 +73,11 @@ export const RegisterForm = () => {
       console.error("Register failed:", error);
       toast("Register failed", {
         description: "Something went wrong, please try again.",
+        duration: 3000,
+        style: {
+          backgroundColor: "#ef4444", // Tailwind red-500
+          color: "white",
+        },
       });
     }
   };

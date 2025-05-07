@@ -11,10 +11,11 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import VerifyOtpPage from "./verify-otp";
+import { toast } from "sonner";
 
 const QrCodeDisplay = () => {
   const router = useRouter();
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const dispatch = useAppDispatch();
 
   const [qr, setQr] = useState<string | null>(null);
@@ -22,6 +23,7 @@ const QrCodeDisplay = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [uuid, setUuid] = useState("");
   const [waId, setWaId] = useState("");
+  const [otpShow, setOtpShow] = useState(false);
 
   const isFormShow = useAppSelector((state) => state.global.isFormShow);
 
@@ -45,58 +47,88 @@ const QrCodeDisplay = () => {
     // const interval = setInterval(fetchQr, 10000); // Refresh setiap 5 detik
     // return () => clearInterval(interval);
 
+    // dispatch(setIsFormShow(false));
+    // setOtpShow(false);
+
+    if (!localStorage.getItem("uuid")) {
+      localStorage.setItem("uuid", userId);
+    }
+    let uuid = localStorage.getItem("uuid");
+
+    socket.emit("start-client", { userId: uuid }); // Emit event start-client ke backend
     // Emit event start-client ke backend
-    socket.emit("start-client", { userId });
 
     const interval = setInterval(() => {
       if (!authenticated) {
-        socket.emit("start-client", { userId }); // Emit ulang jika belum login
+        uuid = localStorage.getItem("uuid");
+        console.log("Emitting start-client with userId:", uuid);
+
+        socket.emit("start-client", { userId: uuid }); // Emit ulang jika belum login
       }
     }, 30000); // setiap 30 detik (atau sesuaikan dengan masa aktif QR code)
 
     // Listen untuk QR code
-    socket.on(`qr:${userId}`, (qrCode: string) => {
+    socket.on(`qr:${uuid}`, (qrCode: string) => {
+      console.log("QR Code received:", qrCode);
       setQr(qrCode);
     });
 
     // Listen untuk authenticated
-    socket.on(`authenticated:${userId}`, () => {
+    socket.on(`authenticated:${uuid}`, () => {
       console.log("Authenticated!");
       setQr(null);
       setAuthenticated(true);
     });
 
-    socket.on(`login_success-${userId}`, async (data) => {
+    socket.on(`login_success-${uuid}`, async (data) => {
       const { waId, redirect } = data;
       try {
-        await axios.post(
+        const res = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/whatsapp-login`,
           {
             waId,
+            uuid,
           },
           { withCredentials: true }
         );
 
-        toast({
-          title: "Login success",
-          description: "You will be redirected to dashboard page.",
-        });
+        if (res.data?.success) {
+          toast("Login success", {
+            description: "You will be redirected to dashboard page.",
+            duration: 1000,
+            style: {
+              backgroundColor: "#22c55e", // Tailwind green-500
+              color: "white",
+            },
+          });
 
-        router.push(redirect);
+          localStorage.removeItem("uuid");
+          // localStorage.setItem("uuid", res.data.user.id);
+          router.push(redirect);
+        }
       } catch (error: any) {
         console.error("Login error:", error);
-        toast({
-          title: "Login failed",
+
+        toast("Login failed", {
           description: "Invalid credentials or server error.",
+          duration: 3000,
+          style: {
+            backgroundColor: "#ef4444", // Tailwind red-500
+            color: "white",
+          },
         });
       }
     });
 
-    socket.on(`unlinked_whatsapp-${userId}`, (data) => {
-      console.log({ data });
+    // socket.on(`unlinked_whatsapp-${userId}`, (data) => {
+    socket.on(`unlinked_whatsapp-${uuid}`, (data) => {
+      console.log({ event: "unlinked whatsapp", isFormShow, data });
       setUuid(data.uuid);
       setWaId(data.waId);
-      dispatch(setIsFormShow(!isFormShow));
+      // dispatch(setIsFormShow(!isFormShow));
+
+      dispatch(setIsFormShow(true));
+      setOtpShow(true);
     });
 
     // return () => {
@@ -112,11 +144,11 @@ const QrCodeDisplay = () => {
       socket.off(`login_success-${userId}`);
       socket.off(`unlinked_whatsapp-${userId}`);
     };
-  }, [userId, authenticated]);
+  }, [userId, authenticated, otpShow]);
 
-  if (!qr) {
-    return <p className="text-black">Waiting QR Code...</p>;
-  }
+  // if (!qr) {
+  //   return <p className="text-black">Waiting QR Code...</p>;
+  // }
 
   return (
     <div className="flex flex-col items-center">

@@ -20,7 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+// import { useToast } from "@/hooks/use-toast";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState(""),
@@ -30,7 +31,7 @@ export const LoginForm = () => {
   const router = useRouter(),
     [error, setError] = useState("");
 
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   type LoginFormValues = z.infer<typeof LoginSchema>;
 
@@ -61,19 +62,28 @@ export const LoginForm = () => {
         { withCredentials: true }
       ); // penting untuk cookie auth
 
-      toast({
-        title: "Login successful",
+      toast("Login successfull", {
         description: "You will be redirected to dashboard page.",
+        duration: 1000,
+        style: {
+          backgroundColor: "#22c55e", // Tailwind green-500
+          color: "white",
+        },
       });
 
+      // await new Promise((resolve) => setTimeout(resolve, 500)); // delay 1 detik
       router.push("/dashboard");
     } catch (err: any) {
-      console.error("Login error:", err);
-      toast({
-        variant: "destructive",
-        title: "Login failed",
+      toast("Login failed", {
         description: "Invalid credentials or server error.",
+        duration: 1000,
+        style: {
+          backgroundColor: "#ef4444", // Tailwind red-500
+          color: "white",
+        },
       });
+
+      console.error("Login error:", err);
     }
   };
 

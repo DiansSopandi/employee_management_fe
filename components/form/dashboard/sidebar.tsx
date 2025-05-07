@@ -96,9 +96,14 @@ const Sidebar = () => {
     open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
   }`;
 
-  const handleLogout = () => {
-    logout(); // hapus token
+  const handleLogout = async () => {
+    const res = await logout()
+      .then(() => true)
+      .catch(() => false); // hapus token
+
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/login"); // redirect ke login
+    return res;
   };
 
   return (

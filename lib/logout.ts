@@ -3,10 +3,13 @@
 import Cookies from "js-cookie";
 
 export const logout = async () => {
-  await fetch("http://localhost:5001/v1/auth/logout", {
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
     method: "POST",
     credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
-
-  Cookies.remove("access_token"); // hapus token login
+  await new Promise((resolve) => setTimeout(resolve, 100)); // delay 1 detik
+  return true;
 };

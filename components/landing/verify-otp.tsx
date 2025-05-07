@@ -8,6 +8,8 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/app/redux";
+import { toast } from "sonner";
+import { setIsFormShow } from "@/state";
 
 type VerifyOtpPageProps = {
   readonly phoneNumber: string;
@@ -35,21 +37,39 @@ export default function VerifyOtpPage({
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`,
-        { waId, otp },
+        { userId, phoneNumber, otp, email },
         {
           withCredentials: true, // ⬅️ penting agar cookie diterima
         }
       );
 
-      if (res.data?.redirect) {
+      console.log({ res });
+
+      if (res?.data?.success) {
+        toast("Login success", {
+          description: "You will be redirected to dashboard page.",
+          duration: 3000,
+          style: {
+            backgroundColor: "#22c55e", // Tailwind green-500
+            color: "white",
+          },
+        });
+
+        localStorage.removeItem("uuid");
+        // localStorage.setItem("uuid", res.data.userId);
+        dispatch(setIsFormShow(false));
         router.push(res.data.redirect);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || "Error occurred");
+      toast("Login failed", {
+        description: "Invalid OTP or email not found",
+        duration: 3000,
+      });
     }
   };
 
-  if (!isFormShow) return null;
+  // if (!isFormShow) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -74,20 +94,21 @@ export default function VerifyOtpPage({
               //   className="w-full p-2 border rounded"
             />
 
-            <Input
+            {/* <Input
               disabled={true}
               type="hidden"
               placeholder="WhatsApp ID"
               value={waId}
               onChange={(e) => setWaId(e.target.value)}
               //   className="w-full p-2 border rounded"
-            />
+            /> */}
 
             {error && <p className="text-red-600 text-sm">{error}</p>}
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded"
+              className="w-full text-white py-2 rounded"
+              // className="w-full bg-blue-600 text-white py-2 rounded"
             >
               Verified
             </Button>
