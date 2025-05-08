@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { toast } from "sonner";
 import { setIsFormShow } from "@/state";
+import InputOTPCode from "./input-otp-code";
 
 type VerifyOtpPageProps = {
   readonly phoneNumber: string;
@@ -85,6 +86,7 @@ export default function VerifyOtpPage({
               onChange={(e) => setOtp(e.target.value)}
               //   className="w-full p-2 border rounded"
             />
+            {/* <InputOTPCode /> */}
 
             <Input
               type="email"
