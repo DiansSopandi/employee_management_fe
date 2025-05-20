@@ -79,14 +79,13 @@ export default function VerifyOtpPage({
           <h1 className="text-xl font-bold mb-4">OTP Verification</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
+            {/* <Input
               type="text"
               placeholder="OTP Code"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              //   className="w-full p-2 border rounded"
-            />
-            {/* <InputOTPCode /> */}
+            /> */}
+            <InputOTPCode value={otp} onChange={setOtp} />
 
             <Input
               type="email"

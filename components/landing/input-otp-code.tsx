@@ -4,34 +4,26 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-export default function InputOTPCode() {
+interface InputOTPCodeProps {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+}
+
+export default function InputOTPCode({ value, onChange }: InputOTPCodeProps) {
   return (
-    <InputOTP maxLength={6}>
+    <InputOTP
+      maxLength={6}
+      value={value}
+      onChange={onChange} // ini trigger ketika user isi OTP
+    >
       <InputOTPGroup className="space-x-2">
-        <InputOTPSlot
-          index={0}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
-        <InputOTPSlot
-          index={1}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
-        <InputOTPSlot
-          index={2}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
-        <InputOTPSlot
-          index={3}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
-        <InputOTPSlot
-          index={4}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
-        <InputOTPSlot
-          index={5}
-          className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
-        />
+        {[...Array(6)].map((_, i) => (
+          <InputOTPSlot
+            key={i}
+            index={i}
+            className="bg-secondary rounded-md border-l border-accent shadow-none font-semibold"
+          />
+        ))}
       </InputOTPGroup>
     </InputOTP>
   );
