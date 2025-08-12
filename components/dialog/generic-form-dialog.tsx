@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 // Tipe data untuk field input
 export type FormField = {
@@ -19,7 +20,7 @@ export type FormField = {
   label: string;
   type?: string;
   placeholder?: string;
-  defaultValue?: string | number | boolean;
+  defaultValue?: string | number | boolean | string[]; // Untuk select multiple
   options?: { value: string; label: string }[]; // Untuk select dropdown
   required?: boolean;
   validation?: (value: any) => string | null; // Function validasi, mengembalikan error message atau null
@@ -347,6 +348,7 @@ export function GenericFormDialog<T>({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           {fields.map(renderField)}
