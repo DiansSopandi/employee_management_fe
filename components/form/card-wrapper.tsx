@@ -29,11 +29,13 @@ export const CardWrapper = ({
   return (
     <ClientWrapper>
       {/* <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg p-8 shadow-md"> */}
-      <Card className="w-[400px] shadow-md">
+      <Card className="w-full max-w-sm sm:max-w-md lg:max-w-lg p-6 sm:p-8 shadow-md">
         <CardHeader>
-          <CardTitle className="text-center text-lg mb-2">{title}</CardTitle>
+          <CardTitle className="text-center text-xl sm:text-2xl md:text-3xl font-bold mb-2">
+            {title}
+          </CardTitle>
           {description && (
-            <CardDescription className="text-sm text-muted-foreground text-center">
+            <CardDescription className="text-sm sm:text-base text-gray-500 text-muted-foreground text-center">
               {description}
             </CardDescription>
           )}
