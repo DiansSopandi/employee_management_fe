@@ -4,7 +4,7 @@ import { logout } from "@/lib/logout";
 import { faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { useAppDispatch, useAppSelector } from "@/app/redux";
-// import { isSidebarCollapsValue, setIsSidebarCollaps } from "@/state";
+import { isSidebarCollapsValue, setIsSidebarCollaps } from "@/state";
 import {
   Archive,
   CircleDollarSign,
@@ -26,26 +26,29 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { SidebarMenuGroup } from "./sidebar-menu-group";
 import { SidebarItem } from "./sidebar-item";
+import { on } from "events";
 
 interface SidebarLinkProps {
   href: string;
   icon: LucideIcon;
   label: string;
-  //   isCollapsed: boolean;
+  // isCollapsed: boolean;
+  onClick: () => void;
 }
 
 const SidebarLink = ({
   href,
   icon: Icon,
   label,
-}: //   isCollapsed,
-SidebarLinkProps) => {
+  // isCollapsed,
+  onClick,
+}: SidebarLinkProps) => {
   const pathname = usePathname();
   const isActive =
     pathname === href || (pathname === "/" && href === "/dashboard");
 
   return (
-    <Link href={href} key={label}>
+    <Link href={href} key={label} onClick={onClick} prefetch={false}>
       <div
         // className={`cursor-pointer flex items-center ${
         //   isCollapsed ? "justify-center py-4" : "justify-start px-8 py-4"
@@ -92,7 +95,7 @@ const Sidebar = () => {
   // const sidebarClassNames = `fixed flex flex-col bg-luxeGray text-black ${"w-72 md:w-64"}  transistion-all duration-300 overflow-hidden h-full shadow-md z-40 rounded-sm`;
   const [open, setOpen] = useState(false);
 
-  const sidebarClassNames = `fixed flex flex-col bg-[#1E293B] text-white ${"w-72 md:w-60"}  transistion-all duration-300 overflow-hidden h-full shadow-md z-40 rounded-sm ${
+  const sidebarClassNames = `fixed flex flex-col bg-[#1E293B] text-white w-60 lg:w-60  transistion-all duration-300 overflow-hidden h-full shadow-md z-40 rounded-sm ${
     open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
   }`;
 
@@ -122,7 +125,7 @@ const Sidebar = () => {
           // className={`flex justify-between md:justify-normal items-center pt-8 gap-3 ${
           //   isSidebarCollaps ? "px-5" : "px-8"
           // }`}
-          className={`flex justify-between md:justify-normal items-center pt-8 gap-3 ${"px-8"} mb-8`}
+          className={`flex justify-between md:justify-normal items-center pt-8 gap-3 px-8 mb-8`}
         >
           <FontAwesomeIcon icon={faUser} className="w-4 h-4 mr-4" />
           <h1
@@ -149,6 +152,7 @@ const Sidebar = () => {
             icon={LayoutDashboard}
             label="Dashboard"
             //   isCollapsed={isSidebarCollaps}
+            onClick={() => setOpen(false)}
           />
           {/* <SidebarLink
           href="/inventory"
@@ -161,18 +165,21 @@ const Sidebar = () => {
             icon={Clipboard}
             label="Products"
             //   isCollapsed={isSidebarCollaps}
+            onClick={() => setOpen(false)}
           />
           <SidebarLink
             href="/dashboard/users"
             icon={Users2}
             label="Users"
             //   isCollapsed={isSidebarCollaps}
+            onClick={() => setOpen(false)}
           />
           <SidebarLink
             href="/profile"
             icon={User}
             label="Profile"
             //   isCollapsed={isSidebarCollaps}
+            onClick={() => setOpen(false)}
           />
 
           <SidebarLink
@@ -180,6 +187,7 @@ const Sidebar = () => {
             icon={SlidersHorizontal}
             label="Setings"
             //   isCollapsed={isSidebarCollaps}
+            onClick={() => setOpen(false)}
           />
 
           <SidebarMenuGroup label="Tasks" icon={Folder}>

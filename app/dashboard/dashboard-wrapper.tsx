@@ -22,7 +22,7 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
     >
       {/* <DashboardSidebar /> */}
       <Sidebar />
-      <main className=" flex flex-col bg-gray-50 w-full h-full text-black py-7 px-10 md:pl-24 ml-52">
+      <main className=" flex flex-col bg-gray-50 w-full h-full text-black py-7 px-4 sm:px-4 lg:px-10 md:pl-24 lg:ml-60">
         {/* <DashboardHeader /> */}
         <DashboardNavbar />
         {children}

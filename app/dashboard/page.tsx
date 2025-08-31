@@ -40,7 +40,9 @@ export default function Dashboard() {
 
       <div className="bg-white dark:bg-zinc-900 rounded-xl border shadow-sm p-6">
         <h2 className="text-lg font-semibold mb-4">Employee Distribution</h2>
-        <EmployeePieChart />
+        <div className="h-64 md:h-80">
+          <EmployeePieChart />
+        </div>
       </div>
     </main>
   );

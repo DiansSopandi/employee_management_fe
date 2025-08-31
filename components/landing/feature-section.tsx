@@ -40,9 +40,9 @@ const features = [
 export const FeatureSection = () => {
   return (
     <section className="bg-white dark:bg-gray-950 py-20">
-      <div className="max-w-6xl mx-auto px-6 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold mb-4"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -50,7 +50,7 @@ export const FeatureSection = () => {
           Powerful Features for Your HR Needs
         </motion.h2>
         <motion.p
-          className="text-gray-600 dark:text-gray-300 mb-12"
+          className="text-gray-600 dark:text-gray-300 mb-12 text-sm sm:text-base"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -58,11 +58,11 @@ export const FeatureSection = () => {
           Everything you need to manage your workforce effectively.
         </motion.p>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8">
           {features.map((feature, i) => (
             <motion.div
               key={i}
-              className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl shadow-sm text-left"
+              className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl shadow-sm text-left hover:shadow-md transition"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -70,7 +70,7 @@ export const FeatureSection = () => {
             >
               <div className="mb-4">{feature.icon}</div>
               <h3 className="text-lg font-semibold">{feature.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                 {feature.desc}
               </p>
             </motion.div>

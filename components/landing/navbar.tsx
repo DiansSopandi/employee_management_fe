@@ -64,7 +64,13 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-4 bg-white">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="md:hidden px-4 pb-4 space-y-4 bg-white shadow-md"
+        >
           <Link href="/" className="block text-gray-700">
             Home
           </Link>
@@ -86,7 +92,7 @@ export const Navbar = () => {
           >
             Register
           </Link>
-        </div>
+        </motion.div>
       )}
     </motion.nav>
     // <header className="flex justify-between items-center px-6 py-4 border-b bg-background sticky top-0 z-50">
