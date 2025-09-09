@@ -24,9 +24,12 @@ import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
 import { SocialLoginButtons } from "./social-login-form";
+import { useAppDispatch } from "@/app/redux";
+import { setAuth } from "@/state/auth-slice";
 // import { useToast } from "@/hooks/use-toast";
 
 export const LoginForm = () => {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [showPassword, setShowPassword] = useState(false);
@@ -64,6 +67,17 @@ export const LoginForm = () => {
         },
         { withCredentials: true }
       ); // penting untuk cookie auth
+
+      console.log("Login response:", res.data);
+
+      dispatch(
+        setAuth({
+          id: res.data.id,
+          email: res.data.email,
+          accessToken: res.data.accessToken,
+          roles: res.data.roles,
+        })
+      );
 
       toast("Login successfull", {
         description: "You will be redirected to dashboard page.",

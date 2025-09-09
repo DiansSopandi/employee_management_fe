@@ -26,7 +26,8 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { SidebarMenuGroup } from "./sidebar-menu-group";
 import { SidebarItem } from "./sidebar-item";
-import { on } from "events";
+import { useAppSelector } from "@/app/redux";
+import { canAny, hasRole } from "@/lib/ability";
 
 interface SidebarLinkProps {
   href: string;
@@ -55,7 +56,7 @@ const SidebarLink = ({
         // } hover:text-blue-500 hover:bg-blue-100 gap-3 transition-colors ${
         //   isActive ? "bg-blue-200 text-white" : ""
         // }`}
-        className={`cursor-pointer flex items-center ${"justify-start px-8 py-3"} gap-3 hover:text-blue-500 hover:bg-slate-700  transition-colors ${
+        className={`cursor-pointer flex items-center justify-start px-8 py-3 gap-3 hover:text-blue-500 hover:bg-slate-700  transition-colors ${
           isActive ? "bg-blue-200 text-white" : ""
         } rounded-sm text-sm`}
       >
@@ -66,7 +67,7 @@ const SidebarLink = ({
           //     isCollapsed ? "hidden" : "block"
           //   } font-medium text-gray-700`}
           // className={`${"block"} font-medium text-gray-700`}
-          className={`${"block"} font-medium text-white`}
+          className={`block font-medium text-white`}
         >
           {label}
         </span>
@@ -77,6 +78,7 @@ const SidebarLink = ({
 
 const Sidebar = () => {
   const router = useRouter();
+  const state = useAppSelector((s) => s);
 
   //   const dispatch = useAppDispatch();
   // comment below do not remove
@@ -160,20 +162,26 @@ const Sidebar = () => {
           label="Inventory"
           //   isCollapsed={isSidebarCollaps}
         /> */}
-          <SidebarLink
-            href="/products"
-            icon={Clipboard}
-            label="Products"
-            //   isCollapsed={isSidebarCollaps}
-            onClick={() => setOpen(false)}
-          />
-          <SidebarLink
-            href="/dashboard/users"
-            icon={Users2}
-            label="Users"
-            //   isCollapsed={isSidebarCollaps}
-            onClick={() => setOpen(false)}
-          />
+          {canAny(state, "PRODUCTS", ["READ", "CREATE"]) && (
+            <SidebarLink
+              href="/products"
+              icon={Clipboard}
+              label="Products"
+              //   isCollapsed={isSidebarCollaps}
+              onClick={() => setOpen(false)}
+            />
+          )}
+
+          {hasRole(state, ["ADMIN", "SUPERADMIN"]) && (
+            <SidebarLink
+              href="/dashboard/users"
+              icon={Users2}
+              label="Users"
+              //   isCollapsed={isSidebarCollaps}
+              onClick={() => setOpen(false)}
+            />
+          )}
+
           <SidebarLink
             href="/profile"
             icon={User}
@@ -182,13 +190,15 @@ const Sidebar = () => {
             onClick={() => setOpen(false)}
           />
 
-          <SidebarLink
-            href="/settings"
-            icon={SlidersHorizontal}
-            label="Setings"
-            //   isCollapsed={isSidebarCollaps}
-            onClick={() => setOpen(false)}
-          />
+          {hasRole(state, ["ADMIN", "SUPERADMIN"]) && (
+            <SidebarLink
+              href="/settings"
+              icon={SlidersHorizontal}
+              label="Settings"
+              //   isCollapsed={isSidebarCollaps}
+              onClick={() => setOpen(false)}
+            />
+          )}
 
           <SidebarMenuGroup label="Tasks" icon={Folder}>
             <SidebarItem label="Task List" href="/tasks/list" />

@@ -9,6 +9,7 @@ import {
   Provider,
 } from "react-redux";
 import globalReducer from "@/state";
+import authReducer from "@/state/auth-slice";
 import { api } from "@/state/api";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
@@ -48,11 +49,12 @@ const storage =
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["global"],
+  whitelist: ["global", "auth"],
 };
 
 const rootReducer = combineReducers({
   global: globalReducer,
+  auth: authReducer,
   [api.reducerPath]: api.reducer,
 });
 
