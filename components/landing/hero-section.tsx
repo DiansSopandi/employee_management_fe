@@ -26,6 +26,7 @@ export const HeroSection = () => {
           alt="HR dashboard"
           width={500}
           height={500}
+          priority
           className="dark:invert object-contain"
         />
       </div>

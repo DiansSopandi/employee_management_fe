@@ -103,7 +103,7 @@ export function EditUserDialog({
           const options = [
             { value: "USER", label: "USER" },
             { value: "ADMIN", label: "ADMIN" },
-            { value: "EMPLOYEE", label: "EMPLOYEE" },
+            // { value: "EMPLOYEE", label: "EMPLOYEE" },
             { value: "SUPERADMIN", label: "SUPERADMIN" },
           ];
 
@@ -147,11 +147,17 @@ export function EditUserDialog({
   // 🛠️ Fungsi submit ke backend
   const handleSubmit = async (data: any) => {
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "include",
+        }
+      );
+
+      console.log({ res });
 
       const result = await res.json();
 

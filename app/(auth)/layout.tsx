@@ -15,6 +15,7 @@ export default function AuthLayout({
           <Image
             src="/assets/images/absence_management.png"
             alt="Company Logo"
+            priority
             className="h-14 mx-auto mb-6"
             width={100}
             height={200}
